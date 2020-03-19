@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_home/introDisplay.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,17 +22,30 @@ class SplashPage extends StatefulWidget{
 
 class _SplashPageState extends State<SplashPage> {
 
-  _AuthPref() async {
+  bool isAuth = false;
+
+  _authPref() async {
     SharedPreferences shared_User = await SharedPreferences.getInstance();
     if (shared_User.getBool("isAuth") != true){
       shared_User.setBool("isAuth", false);
+      setState(() {
+        isAuth = false;
+      });
     } else if (shared_User.getBool("isAuth") == true){
       shared_User.setBool("isAuth", true); 
+      setState(() {
+        isAuth = true;
+      });
     }else{
       shared_User.setBool("isAuth", false);
+      setState(() {
+        isAuth = false;
+      });
     }
     
   }
+
+  
 
   checkConnection() async {
     try {
@@ -51,7 +65,7 @@ class _SplashPageState extends State<SplashPage> {
     @override
   void initState() {
     super.initState();
-    _AuthPref();
+    _authPref();
   }
 
   @override
@@ -67,7 +81,10 @@ class _SplashPageState extends State<SplashPage> {
       
       loaderColor: Color(0xFF79c942),
       navigateAfterSeconds: 
+      isAuth ?
       Dashboard()
+      :
+      IntroDisplay()
     );
   }
   

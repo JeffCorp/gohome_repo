@@ -284,20 +284,11 @@ class _PropertyListState extends State<PropertyList> {
     return fAmount;
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   isActive = false;
-  //   a = amount;
-  //   try{
-  //     fAmount =
-  //       FlutterMoneyFormatter(amount: double.parse(a));
-  //   }catch (e){
-  //     fAmount = FlutterMoneyFormatter(amount: double.parse("0.0"));
-  //     print(e.toString());
-  //   }
-
-  // }
+  @override
+  void initState() {
+    super.initState();
+    getUserState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -314,9 +305,6 @@ class _PropertyListState extends State<PropertyList> {
               Row(
                 children: <Widget>[
                   GestureDetector(
-                    onLongPress: () {
-                      addToFavorites(context);
-                    },
                     onTap: () {
 //                      Navigator.push(
 //                        context,

@@ -126,6 +126,7 @@ class _EachPropertyState extends State<EachProperty> {
     textFav = "Add to Favourites";
     _width = 150;
     _color = Color(0xFF79c942);
+    getUserState();
   }
 
   _addToFavorites() async {
@@ -608,7 +609,7 @@ class _EachPropertyState extends State<EachProperty> {
                 ),
               ),
             ),
-            !isAuth ?
+            isAuth ?
             !item.isFav
                 ? GestureDetector(
                     onTap: _addToFavorites,

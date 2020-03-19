@@ -9,7 +9,9 @@ import 'package:go_home/classes/success.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:quiver/async.dart';
 
+import '../classes/user.dart';
 import '../components/labelledInput.dart';
+import 'eachProperty.dart';
 
 class ModifyProfile extends StatefulWidget {
   @override
@@ -18,6 +20,8 @@ class ModifyProfile extends StatefulWidget {
 
 class _ModifyProfileState extends State<ModifyProfile> {
   Future<File> file;
+
+  Dialog simpleDialog;
 
   List user;
   String user_id, user_email;
@@ -67,32 +71,9 @@ class _ModifyProfileState extends State<ModifyProfile> {
   static final String uploadEndPoint =
       'https://gohome.ng/uploadProperty_image_api.php';
   String status = '';
+  
   String base64String;
   File tmpFile;
-  String errMessage = "Error uploading Image";
-
-  String propertyValue = "House";
-  String saleOrRent = "Sale";
-  String bedroom = "Bedroom";
-  String yesNo = "Yes"; //Garages
-  String stateValue = "Lagos"; //State
-  String lgaValue = "Any LGA";
-
-  //Controllers
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descController = TextEditingController();
-  TextEditingController bathCountController = TextEditingController();
-  TextEditingController storeyController = TextEditingController();
-  TextEditingController plotController = TextEditingController();
-  TextEditingController priceController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController zipController = TextEditingController();
-
-  List<String> features = List();
-  List<Future<File>> fileList = List();
-  List<File> tmpList = List();
-
-  List bsList = [];
 
   chooseImage() {
     setState(() {
@@ -105,6 +86,7 @@ class _ModifyProfileState extends State<ModifyProfile> {
   TextEditingController passController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController webController = TextEditingController();
+  TextEditingController confPassController = TextEditingController();
 
   String myString, userId;
 
@@ -129,21 +111,81 @@ class _ModifyProfileState extends State<ModifyProfile> {
     String email = emailController.text;
     String phone = phoneController.text;
     String password = passController.text;
+    String confPass = confPassController.text;
+    String website = webController.text;
     SharedPreferences shared_User = await SharedPreferences.getInstance();
-
     String body;
 
-    if (email.length > 0 && password.length > 0) {
-      setState(() {
-        // isLoading = true;
-      });
 
+    if (password.length != null){
+      if (confPass == password) {
+        // set up POST request arguments
+          String url = 'https://www.gohome.ng/_update_user_api.php';
+          Map<String, String> headers = {"Content-type": "application/json"};
+          String json =
+              '{"name" : "${username}", "email" : "${email}", "phone" : "${phone}", "password" : "${password}", "user_id" : "${userId}", "website" : "${website}", "img_name": "${filename}" }';
+          // make POST request
+
+          print(json);
+          Response response = await post(url, headers: headers, body: json);
+          // Response response = await post(url, body: json);
+          // check the status code for the result
+          int statusCode = response.statusCode;
+          // this API passes back the id of the new item added to the body
+          body = response.body;
+
+          print(body.toString());
+
+          Success success = Success.fromJson(jsonDecode(body));
+          if (success.status == "OK") {
+            debugPrint(success.message);
+            Map decode_options = jsonDecode(body);
+            User user = User.fromJson(jsonDecode(body));
+            shared_User.setStringList('user', [
+              user.id,
+              user.email,
+              user.avatar,
+              user.name,
+              user.message,
+              user.password,
+              user.phone,
+              user.status
+            ]);
+            String uploadUrl = "https://www.gohome.ng/upload_image_api.php";
+
+            Navigator.of(context).pop(simpleDialog);
+            showSimpleCustomDialog(context, "Success",
+                "Request has been sent successfully", "assets/success.gif");
+            
+            http.post(uploadUrl,
+              body: {"image": base64String, "img_name": filename, "email": email}).then((result) {
+              setStatus(result.body);
+            }).catchError((error) {
+              setStatus(error.toString());
+              print(error.toString());
+            });
+            setState(() {
+              // isLoading = false;
+            });
+          } else {
+            print('error connecting' + success.status);
+          }
+        // } else {
+        //   print("error");
+        // }
+      }else {
+        Navigator.of(context).pop(simpleDialog);
+        showSimpleCustomDialog(context, "Passwords do not match", "Please enter matching passwords", "assets/error.gif");
+      }
+    }else {
       // set up POST request arguments
       String url = 'https://www.gohome.ng/_update_user_api.php';
       Map<String, String> headers = {"Content-type": "application/json"};
       String json =
-          '{"name" : "${username}", "email" : "${email}", "phone" : "${phone}", "password" : "${password}", "user_id" : "${userId}", "img_name": "${filename}" }';
+          '{"name" : "${username}", "email" : "${email}", "phone" : "${phone}", "password" : "${password}", "user_id" : "${userId}", "website" : "${website}", "img_name": "${filename}",  }';
       // make POST request
+
+      print(json);
       Response response = await post(url, headers: headers, body: json);
       // Response response = await post(url, body: json);
       // check the status code for the result
@@ -157,11 +199,25 @@ class _ModifyProfileState extends State<ModifyProfile> {
       if (success.status == "OK") {
         debugPrint(success.message);
         Map decode_options = jsonDecode(body);
+        User user = User.fromJson(jsonDecode(body));
+        shared_User.setStringList('user', [
+          user.id,
+          user.email,
+          user.avatar,
+          user.name,
+          user.message,
+          user.password,
+          user.phone,
+          user.status
+        ]);
         String uploadUrl = "https://www.gohome.ng/upload_image_api.php";
+
+        Navigator.of(context).pop(simpleDialog);
+        showSimpleCustomDialog(context, "Success",
+            "Profile updated successfully", "assets/success.gif");
         
         http.post(uploadUrl,
           body: {"image": base64String, "img_name": filename, "email": email}).then((result) {
-          // setStatus(result.statusCode == 200 ? result.body : errMessage);
           setStatus(result.body);
         }).catchError((error) {
           setStatus(error.toString());
@@ -173,19 +229,86 @@ class _ModifyProfileState extends State<ModifyProfile> {
       } else {
         print('error connecting' + success.status);
       }
-      // debugPrint(user.toString());
-    } else {
-      print("error");
+    // } else {
+    //   print("error");
+    // }
     }
+
+    
+      setState(() {
+
+      });
+
+      
+  }
+
+  void showSimpleCustomDialog(BuildContext context, String messageHead,
+      String messageBody, String dialogType) {
+    Dialog simpleDialog = Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Container(
+        height: 300.0,
+        width: 300.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Column(
+                  children: <Widget>[
+                    Image.asset(
+                      dialogType,
+                      height: 100,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        messageBody,
+                        textAlign: TextAlign.center,
+                        style:
+                            TextStyle(color: Color(0xFF79c942), fontSize: 20),
+                      ),
+                    ),
+                  ],
+                )),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Center(
+                    child: MaterialButton(
+                      elevation: 0,
+                      color: Colors.white,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Ok!',
+                        style:
+                            TextStyle(fontSize: 18.0, color: Color(0xFF79c942)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    showDialog(
+        context: context, builder: (BuildContext context) => simpleDialog);
   }
 
   List<bool> arr_check = [for (int i = 0; i < 14; i++) false];
 
   setStatus(String message) {
     setState(() {
-      // message.length != 0?
-      // status = message.substring(0,20)
-      // :
       status = message;
     });
   }
@@ -202,68 +325,20 @@ class _ModifyProfileState extends State<ModifyProfile> {
 
   List<String> fileNameList = List();
   startUpload() {
+    _uploadingDialog(context);
+    String filename;
     setStatus("Uploading...");
     if (null == tmpFile) {
-      setStatus(errMessage);
-      return;
+      setStatus("error");
+      // return;
+      filename = user[2];
+    }else{
+      filename = tmpFile.path.split('/').last;
     }
-    // String filename;
-    // for(int i = 0; i < tmpList.length; i++){
-    //   filename = tmpList[i].path.split('/').last;
-    //   fileNameList.add(filename);
-    // }
-    // upload(fileNameList);
-    String filename = tmpFile.path.split('/').last;
     _updateUserProfile(filename);
   }
 
-  // upload(String filename) async {
-  //   String featureToString = features.join(',');
-  //   String body;
-  //   String title = titleController.text;
-  //   String desc = descController.text;
-  //   String bath = bathCountController.text;
-  //   String storey = storeyController.text;
-  //   String plot = plotController.text;
-  //   String price = priceController.text;
-  //   String address = addressController.text;
-  //   String zip = zipController.text;
-  //   Map<String, String> headers = {"Content-type": "application/json"};
-  //   String url = "https://gohome.ng/api/upload_property_data.php";
-  //   String json = 
-  //   // make POST request
-  //   // print(json);
-  //   Response response = await post(url, headers: headers, body: json);
-  //   // check the status code for the result
-  //   int statusCode = response.statusCode;
-  //   // this API passes back the id of the new item added to the body
-  //   body = response.body;
-
-  //   Success success = Success.fromJson(jsonDecode(body));
-  //   if (success.status == "OK") {
-  //     titleController.text = null;
-  //     descController.text = null;
-  //     bathCountController.text = null;
-  //     bathCountController.text = null;
-  //     storeyController.text = null;
-  //     plotController.text = null;
-  //     priceController.text = null;
-  //     addressController.text = null;
-  //     zipController.text = null;
-
-  //     debugPrint(success.message);
-  //     Map decode_options = jsonDecode(body);
-  //     http.post(uploadEndPoint,
-  //         body: {"image": base64String, "name": filename}).then((result) {
-  //       setStatus(result.statusCode == 200 ? result.body : errMessage);
-  //     }).catchError((error) {
-  //       // setStatus(error.toString());
-  //       print(error.toString());
-  //     });
-  //   } else {
-  //     print('error connecting' + success.status);
-  //   }
-  // }
+  
 
   Widget showImage() {
     return FutureBuilder<File>(
@@ -273,9 +348,6 @@ class _ModifyProfileState extends State<ModifyProfile> {
             null != snapshot.data) {
           tmpFile = snapshot.data;
           base64String = base64Encode(snapshot.data.readAsBytesSync());
-          // return Container(
-          //   child: Text(snapshot.data.toString())
-          // );
           return Container(
             width: MediaQuery.of(context).size.width * 0.85,
             alignment: Alignment.center,
@@ -295,15 +367,70 @@ class _ModifyProfileState extends State<ModifyProfile> {
             textAlign: TextAlign.center,
           );
         } else {
-          return const Text(
-            "No image found",
-            textAlign: TextAlign.center,
+          return Container(
+            alignment: Alignment.center,
+            width: MediaQuery.of(context).size.width * 0.85,
+            child: CircleAvatar(
+                        child: Container(
+                          height: 100,
+                          width: 100,
+                          child: ClipOval(
+                            child: FadeInImage.assetNetwork(
+                            placeholder: "assets/person.png",
+                            image: "https://www.gohome.ng/assets/images/agents/${user[1]}/${user[2]}",
+                            fit: BoxFit.cover,
+                          ),
+                          )
+                        ),
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.white38,
+                        maxRadius: 60,
+                      ),
           );
         }
       },
     );
     //  }
     // );
+  }
+
+  void _uploadingDialog(BuildContext context) {
+    simpleDialog = Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Container(
+        color: Colors.transparent,
+        height: 300.0,
+        width: 300.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Column(
+                  children: <Widget>[
+                    CircularProgressIndicator()                 
+                  ],
+                )),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  SizedBox(
+                    width: 20,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    showDialog(
+        context: context, builder: (BuildContext context) => simpleDialog);
   }
 
   Future<bool> _onBackPressed() async {
@@ -390,15 +517,15 @@ class _ModifyProfileState extends State<ModifyProfile> {
                                 ),
                               ],
                             ),
-                            Text(
-                              status,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 10.0,
-                              ),
-                            ),
+                            // Text(
+                            //   status,
+                            //   textAlign: TextAlign.center,
+                            //   style: TextStyle(
+                            //     color: Colors.green,
+                            //     fontWeight: FontWeight.w500,
+                            //     fontSize: 10.0,
+                            //   ),
+                            // ),
                           ],
                         ),
                         // Column(
@@ -444,8 +571,18 @@ class _ModifyProfileState extends State<ModifyProfile> {
                               margin: EdgeInsets.only(top: 10, bottom: 10),
                               child: TextFormField(
                                 controller: passController,
+                                obscureText: true,
                                 decoration:
                                     InputDecoration(hintText: 'Password'),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 10),
+                              child: TextFormField(
+                                controller: confPassController,
+                                obscureText: true,
+                                decoration:
+                                    InputDecoration(hintText: 'Confirm Password'),
                               ),
                             ),
                             Container(

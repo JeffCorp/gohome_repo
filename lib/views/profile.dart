@@ -28,7 +28,7 @@ class _ProfileState extends State<Profile> {
     // Map userMap = jsonDecode(shared_User.getString('user'));
     user = shared_User.getStringList('user');
     debugPrint(user.toString());
-    debugPrint(user[2]);
+    // debugPrint(user[2]);
 
     setState(() {
       myString = user[3];
@@ -124,17 +124,17 @@ class _ProfileState extends State<Profile> {
                   padding: EdgeInsets.all(20),
                   child: Row(
                     children: <Widget>[
-                      CircleAvatar(
-                        child: Container(
-                          child: FadeInImage.assetNetwork(
+                        Container(
+                          height: 100,
+                          width: 100,
+                          child: ClipOval(
+                            child: FadeInImage.assetNetwork(
                             placeholder: "assets/person.png",
-                            image: "http://www.gohome.ng/assets/images/agents/${user[1]}/${user[2]}",
+                            image: "https://www.gohome.ng/assets/images/agents/${user[1]}/${user[2]}",
+                            fit: BoxFit.cover,
                           ),
+                          )
                         ),
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.white38,
-                        maxRadius: 60,
-                      ),
                       Column(
                         children: <Widget>[
                           Text(

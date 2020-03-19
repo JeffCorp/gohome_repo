@@ -9,7 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
-
+import 'package:fluttertoast/fluttertoast.dart';
 //import 'package:location/location.dart';
 
 import '../components/notificationPill.dart';
@@ -62,17 +62,25 @@ class _NearbyPlacestate extends State<NearbyPlaces> {
   static List<Set<Marker>> _markerList = List();
   LatLng _lastMapPosition = _center;
   MapType _currentMapType = MapType.normal;
+  String someData;
+  Marker markerPointers;
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
+    markerPointers= Marker(
+    markerId: MarkerId('h1'),
+    position: LatLng(myLat, myLong),
+    infoWindow: InfoWindow(title: 'Banex'),
+    icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+    
+  );
     print(await searchNearby("hotel"));
+    searchandNavigate();
   }
 @override
   void initState(){
     super.initState();
-    // _onAddMarkerButtonPressed();
-    searchandNavigate();
   }
 
 //function to get an address of a given location 
@@ -96,27 +104,43 @@ class _NearbyPlacestate extends State<NearbyPlaces> {
     var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
     var parameters = {
       'key': apiKey,
-      'location': '$myLat, $myLong',
+      'location': '$lat, $long',
       'radius': '800',
       'keyword': keyword
     };
 
     var response = await dio.get(url, data: parameters);
-    setState(() {
-      nearestLat = response.data["results"]
+    // setState(() {
+    //   nearestLat = response.data["results"]
+    //     .map<String>(
+    //         (result) => result['geometry']['location']['lat'].toString())
+    //     .toList();
+    // nearestLong = response.data["results"]
+    //     .map<String>(
+    //         (result) => result['geometry']['location']['lng'].toString())
+    //     .toList();
+    // });
+    // setState(() {
+    //   someData = response.data["results"];
+    // });
+
+    List latList = response.data["results"]
         .map<String>(
             (result) => result['geometry']['location']['lat'].toString())
         .toList();
-    nearestLong = response.data["results"]
+
+    List longList = response.data["results"]
         .map<String>(
             (result) => result['geometry']['location']['lng'].toString())
         .toList();
-    });
+        
+    for (int i = 0; i <= latList.length; i++){
+
+    }
+
+    print(response.data["results"]);
     
-    return response.data["results"]
-        .map<String>(
-            (result) => result['geometry']['location']['lat'].toString())
-        .toList();
+    return latList;
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -160,7 +184,7 @@ class _NearbyPlacestate extends State<NearbyPlaces> {
 //print(_onAddMarkerButtonPressed());
 
 
-searchandNavigate() {
+searchandNavigate() async{
     Geolocator().placemarkFromAddress(item.address).then((result) {
       mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
           target:
@@ -169,7 +193,15 @@ searchandNavigate() {
           setState(() {
             lat = result[0].position.latitude;
             long = result[0].position.longitude;
+
+              markerPointers = Marker(
+                markerId: MarkerId('h1'),
+                position: LatLng(lat, long),
+                infoWindow: InfoWindow(title: 'Banex'),
+                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+              );
           });
+          
     });
   } 
 
@@ -233,10 +265,10 @@ searchandNavigate() {
               zoom: 11.0,
             ),
             mapType: _currentMapType,
-            // markers: {
-            //   markerPointers,
+            markers: {
+              markerPointers,
             //   newPointer
-            // },
+            },
             myLocationEnabled: true,
             onCameraMove: _onCameraMove,
           ),
@@ -264,13 +296,6 @@ searchandNavigate() {
 
 //Demo Marker Pointers for testing purposes 
 
-//  Marker markerPointers = Marker(
-//     markerId: MarkerId('h1'),
-//     position: LatLng(9.060352,7.4514432),
-//     infoWindow: InfoWindow(title: 'Banex'),
-//     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-    
-//   );
 
 //   Marker newPointer = Marker(
 //     markerId: MarkerId('h1'),

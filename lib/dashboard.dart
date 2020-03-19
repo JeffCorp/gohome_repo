@@ -9,13 +9,13 @@ import 'package:geolocator/geolocator.dart';
 
 import './tabs/dashboardTab.dart';
 import './tabs/favoritesTab.dart';
-import './tabs/notifTab.dart';
+import './tabs/NotifTab.dart';
 import './tabs/blogTab.dart';
 import './views/profile.dart';
 import './classes/user.dart';
 import './views/allProperties.dart';
 import './views/inquiryForm.dart';
-import './Login.dart';
+import './login.dart';
 import './views/addProperties.dart';
 import './views/messages.dart';
 
