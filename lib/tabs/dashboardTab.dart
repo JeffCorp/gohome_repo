@@ -340,23 +340,26 @@ class _DashboardTabState extends State<DashboardTab> {
 
   void filter() {
     setState(() {
-      filteredProperties = properties
+      filteredProperties = filteredProperties
           .where((p) =>
-              p.state.toLowerCase().contains(regionValue.toLowerCase()) &&
-              p.propType.toLowerCase().contains(typeValue.toLowerCase()) &&
-              p.status.toLowerCase().contains(statusValue.toLowerCase()) &&
-              (bedroomController.text.length != 0
-                  ? int.parse(p.bedroom) == int.parse(bedroomController.text)
-                  : int.parse(p.bedroom) > 0) &&
-              (bathroomController.text.length != 0
-                  ? int.parse(p.bathroom) == int.parse(bathroomController.text)
-                  : int.parse(p.bathroom) > 0) &&
-              (minController.text.length != 0
-                  ? int.parse(p.amount) > int.parse(minController.text)
-                  : int.parse(p.amount) > 0) &&
-              (maxController.text.length != 0
-                  ? int.parse(p.amount) < int.parse(maxController.text)
-                  : int.parse(p.amount) < 1000000000))
+              (p.state.toLowerCase().contains(regionValue.toLowerCase()))
+              //  &&
+              // (p.propType.toLowerCase() == typeValue.toLowerCase()) &&
+              // (p.status.toLowerCase() == statusValue.toLowerCase()) 
+              // &&
+              // (bedroomController.text.length != 0
+              //     ? int.parse(p.bedroom) == int.parse(bedroomController.text)
+              //     : int.parse(p.bedroom) > 0) &&
+              // (bathroomController.text.length != 0
+              //     ? int.parse(p.bathroom) == int.parse(bathroomController.text)
+              //     : int.parse(p.bathroom) > 0) &&
+              // (minController.text.length != 0
+              //     ? int.parse(p.amount) > int.parse(minController.text)
+              //     : int.parse(p.amount) > 0) &&
+              // (maxController.text.length != 0
+              //     ? int.parse(p.amount) < int.parse(maxController.text)
+              //     : int.parse(p.amount) < 1000000000)
+                  )
           .toList();
     });
   }
@@ -712,6 +715,7 @@ class _DashboardTabState extends State<DashboardTab> {
                             onChanged: (String newValue) {
                               setState(() {
                                 regionValue = newValue;
+                                
                               });
                             },
                             items: <String>[

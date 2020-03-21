@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_home/components/bottomMessageIcon.dart';
 import 'package:go_home/views/testPicker.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -278,8 +279,8 @@ class _DashboardState extends State<Dashboard> {
             title: Text("Favorites"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            title: Text("Messages"),
+            icon: BottomMessageIcon(Icons.message),
+            title: Text("Messages", style: TextStyle(),),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.feedback),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_home/views/searchView.dart';
 
 import '../views/cityContent.dart';
 
@@ -70,39 +71,7 @@ class DataSearch extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     // show some results based on selecion
-    return CityContent(query, hideAppBar: true);
-    return Container(
-      margin: EdgeInsets.only(top: 10),
-      child: Column(
-        children: <Widget>[
-          query.length < 1
-              ? Center(
-                  child: Text("No result found !"),
-                )
-              : Center(
-                  child: Text("Showing 1 result for " + query),
-                ),
-          Card(
-              child: Container(
-            padding: EdgeInsets.all(10),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CityContent(query),
-                  ),
-                );
-              },
-              child: Text(
-                query,
-                style: TextStyle(fontSize: 20, color: Color(0xFF79c942)),
-              ),
-            ),
-          )),
-        ],
-      ),
-    );
+    return SearchView(query: query, hideAppBar: true,);
   }
 
   @override
@@ -116,13 +85,14 @@ class DataSearch extends SearchDelegate<String> {
       itemBuilder: (context, index) => ListTile(
         onTap: () {
           query = suggestionList[index];
-          // showResults(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CityContent(query),
-            ),
-          );
+          showResults(context);
+          return SearchView(query: query, hideAppBar: true,);
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => SearchView(query: query,),
+          //   ),
+          // );
         },
         leading: Icon(Icons.location_city),
         title: RichText(

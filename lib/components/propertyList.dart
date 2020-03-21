@@ -298,7 +298,7 @@ class _PropertyListState extends State<PropertyList> {
       },
       child: Card(
         child: Container(
-          height: 180.0,
+          height: 163.0,
           width: double.infinity,
           child: Column(
             children: <Widget>[

@@ -37,8 +37,7 @@ class _IntroDisplayState extends State<IntroDisplay>{
             fontSize: 20.0,
             fontStyle: FontStyle.italic,
             fontFamily: 'Raleway'),
-        pathImage: "images/photo_school.png",
-        backgroundImage: "assets/sneak_peek.png"
+        pathImage: "assets/sneak_peek.png",
       ),
     );
     slides.add(
@@ -56,13 +55,12 @@ class _IntroDisplayState extends State<IntroDisplay>{
             fontSize: 20.0,
             fontStyle: FontStyle.italic,
             fontFamily: 'Raleway'),
-        pathImage: "images/photo_museum.png",
-        backgroundImage: "assets/think_houses.png"
+        pathImage: "assets/think_houses.png",
       ),
     );
     slides.add(
       new Slide(
-        title: "Solution",
+        title: "GoHome",
         styleTitle: TextStyle(
             color: Color(0xff3da4ab),
             fontSize: 30.0,
@@ -75,8 +73,10 @@ class _IntroDisplayState extends State<IntroDisplay>{
             fontSize: 20.0,
             fontStyle: FontStyle.italic,
             fontFamily: 'Raleway'),
-        pathImage: "images/photo_coffee_shop.png",
-        backgroundImage: "assets/home.png"
+        pathImage: "assets/gohome.png",
+        backgroundImage: "assets/home.png",
+        backgroundImageFit: BoxFit.cover,
+        widthImage: 150.0,
       ),
     );
   }
