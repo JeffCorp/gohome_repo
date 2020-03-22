@@ -93,12 +93,23 @@ class _AllPropertiesState extends State<AllProperties> {
   }
 
   void filter() {
-    setState(() {
-      filteredProperties = properties
+    
+    print(properties
           .where((p) =>
-              p.state.toLowerCase().contains(regionValue.toLowerCase()) &&
-              p.propType.toLowerCase().contains(typeValue.toLowerCase()) &&
-              p.status.toLowerCase().contains(statusValue.toLowerCase()) &&
+              p.state.toLowerCase() == regionValue.toLowerCase()).toList());
+    //  setState(() {
+    filteredProperties = [];
+     
+    
+    setState(() {
+      
+      Services.getProperties().then((propertiesFromServer) {
+        setState(() {
+          filteredProperties = properties
+          .where((p) =>
+              (p.state.toLowerCase()) == (regionValue.toLowerCase()) &&
+              (p.propType.toLowerCase() == typeValue.toLowerCase()) &&
+              (p.status.toLowerCase() == statusValue.toLowerCase())&&
               (bedroomController.text.length != 0
                   ? int.parse(p.bedroom) == int.parse(bedroomController.text)
                   : int.parse(p.bedroom) > 0) &&
@@ -110,9 +121,12 @@ class _AllPropertiesState extends State<AllProperties> {
                   : int.parse(p.amount) > 0) &&
               (maxController.text.length != 0
                   ? int.parse(p.amount) < int.parse(maxController.text)
-                  : int.parse(p.amount) < 1000000000))
-          .toList();
+                  : int.parse(p.amount) < 1000000000)
+                  ).toList();
+        });  
     });
+
+     });
   }
 
   Future<void> refresh() async {
@@ -141,8 +155,22 @@ class _AllPropertiesState extends State<AllProperties> {
                   child: Container(
                     height: MediaQuery.of(context).size.height,
                     width: double.infinity,
-                    child: Text(
-                        "No result found. Please check your data connection !"),
+                    child: Column(
+                      children: <Widget>[
+                        CircularProgressIndicator(backgroundColor: Color(0xFF79c942),),
+                                  // Icon(Icons.error,
+                                  //     size: 70, color: Colors.red),
+                                  Container(
+                                    padding: EdgeInsets.all(30),
+                                    child: Center(
+                                      child: Text(
+                                        "Attempting data search.",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  )
+                      ],
+                    )
                   ))
               : RefreshIndicator(
                   onRefresh: refresh,
@@ -203,9 +231,22 @@ class _AllPropertiesState extends State<AllProperties> {
                                 },
                               ),
                             )
-                          : CircularProgressIndicator(
-                              backgroundColor: Color(0xFF79c942),
-                            ),
+                          :  Column(
+                      children: <Widget>[
+                        CircularProgressIndicator(backgroundColor: Color(0xFF79c942),),
+                                  // Icon(Icons.error,
+                                  //     size: 70, color: Colors.red),
+                                  Container(
+                                    padding: EdgeInsets.all(30),
+                                    child: Center(
+                                      child: Text(
+                                        "Attempting data search.",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  )
+                      ],
+                    )
                     ],
                   ),
                 ),

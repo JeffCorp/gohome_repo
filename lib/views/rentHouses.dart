@@ -49,21 +49,38 @@ class _RentHousesState extends State<RentHouses> {
       });
     });
   }
-
-  void filter() {
-    setState(() {
-      filteredProperties = properties
+void filter() {
+    
+    print(properties
           .where((p) =>
-              p.state.toLowerCase().contains(regionValue.toLowerCase()) &&
-              p.propType.toLowerCase().contains(typeValue.toLowerCase()) &&
-              p.status.toLowerCase().contains(statusValue.toLowerCase()) &&
-              p.bedroom.contains(bedroomController.text) &&
-              // int.parse(p.bathroom) == int.parse(bathroomValue)
-              p.bathroom.contains(bathroomController.text) &&
-              int.parse(p.amount) > int.parse(minController.text)&&
-              int.parse(p.amount) < int.parse(maxController.text))
-          .toList();
+              p.state.toLowerCase() == regionValue.toLowerCase()).toList());
+    //  setState(() {
+    filteredProperties = [];
+    setState(() {
+      RentServices.getProperties().then((propertiesFromServer) {
+        setState(() {
+          filteredProperties = properties
+          .where((p) =>
+              (p.state.toLowerCase()) == (regionValue.toLowerCase()) &&
+              (p.propType.toLowerCase() == typeValue.toLowerCase()) &&
+              (p.status.toLowerCase() == statusValue.toLowerCase())&&
+              (bedroomController.text.length != 0
+                  ? int.parse(p.bedroom) == int.parse(bedroomController.text)
+                  : int.parse(p.bedroom) > 0) &&
+              (bathroomController.text.length != 0
+                  ? int.parse(p.bathroom) == int.parse(bathroomController.text)
+                  : int.parse(p.bathroom) > 0) &&
+              (minController.text.length != 0
+                  ? int.parse(p.amount) > int.parse(minController.text)
+                  : int.parse(p.amount) > 0) &&
+              (maxController.text.length != 0
+                  ? int.parse(p.amount) < int.parse(maxController.text)
+                  : int.parse(p.amount) < 1000000000)
+                  ).toList();
+        });  
     });
+
+     });
   }
 
   Future<void> refresh() async {
@@ -139,9 +156,22 @@ class _RentHousesState extends State<RentHouses> {
                       },
                     ),
                   )
-                : CircularProgressIndicator(
-                    backgroundColor: Color(0xFF79c942),
-                  ),
+                : Column(
+                      children: <Widget>[
+                        CircularProgressIndicator(backgroundColor: Color(0xFF79c942),),
+                                  // Icon(Icons.error,
+                                  //     size: 70, color: Colors.red),
+                                  Container(
+                                    padding: EdgeInsets.all(30),
+                                    child: Center(
+                                      child: Text(
+                                        "Attempting data search.",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  )
+                      ],
+                    )
           ],
         ),
       ),

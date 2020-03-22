@@ -131,8 +131,7 @@ class _DashboardTabState extends State<DashboardTab> {
     super.initState();
     FeaturedServices.getProperties().then((propertiesFromServer) {
       setState(() {
-        properties = propertiesFromServer;
-        filteredProperties = properties;
+        properties = filteredProperties = propertiesFromServer;
       });
     });
     startTimer();
@@ -339,29 +338,45 @@ class _DashboardTabState extends State<DashboardTab> {
   }
 
   void filter() {
-    setState(() {
-      filteredProperties = filteredProperties
+    
+    print(properties
           .where((p) =>
-              (p.state.toLowerCase().contains(regionValue.toLowerCase()))
-              //  &&
-              // (p.propType.toLowerCase() == typeValue.toLowerCase()) &&
-              // (p.status.toLowerCase() == statusValue.toLowerCase()) 
-              // &&
-              // (bedroomController.text.length != 0
-              //     ? int.parse(p.bedroom) == int.parse(bedroomController.text)
-              //     : int.parse(p.bedroom) > 0) &&
-              // (bathroomController.text.length != 0
-              //     ? int.parse(p.bathroom) == int.parse(bathroomController.text)
-              //     : int.parse(p.bathroom) > 0) &&
-              // (minController.text.length != 0
-              //     ? int.parse(p.amount) > int.parse(minController.text)
-              //     : int.parse(p.amount) > 0) &&
-              // (maxController.text.length != 0
-              //     ? int.parse(p.amount) < int.parse(maxController.text)
-              //     : int.parse(p.amount) < 1000000000)
-                  )
-          .toList();
+              p.state.toLowerCase() == regionValue.toLowerCase()).toList());
+    //  setState(() {
+    filteredProperties = [];
+     
+    
+    setState(() {
+      
+      FeaturedServices.getProperties().then((propertiesFromServer) {
+        setState(() {
+          filteredProperties = properties
+          .where((p) =>
+              (p.state.toLowerCase()) == (regionValue.toLowerCase()) &&
+              (p.propType.toLowerCase() == typeValue.toLowerCase()) &&
+              (p.status.toLowerCase() == statusValue.toLowerCase())&&
+              (bedroomController.text.length != 0
+                  ? int.parse(p.bedroom) == int.parse(bedroomController.text)
+                  : int.parse(p.bedroom) > 0) &&
+              (bathroomController.text.length != 0
+                  ? int.parse(p.bathroom) == int.parse(bathroomController.text)
+                  : int.parse(p.bathroom) > 0) &&
+              (minController.text.length != 0
+                  ? int.parse(p.amount) > int.parse(minController.text)
+                  : int.parse(p.amount) > 0) &&
+              (maxController.text.length != 0
+                  ? int.parse(p.amount) < int.parse(maxController.text)
+                  : int.parse(p.amount) < 1000000000)
+                  ).toList();
+        });
+          
     });
+
+     });
+
+      // });
+    print("From SErver: ${filteredProperties[0].state}");
+    print("From filter: ${regionValue.toLowerCase()}");
   }
 
   reload() {
@@ -623,13 +638,14 @@ class _DashboardTabState extends State<DashboardTab> {
                                   SizedBox(
                                     height: 30,
                                   ),
-                                  Icon(Icons.error,
-                                      size: 70, color: Colors.red),
+                                  CircularProgressIndicator(),
+                                  // Icon(Icons.error,
+                                  //     size: 70, color: Colors.red),
                                   Container(
                                     padding: EdgeInsets.all(30),
                                     child: Center(
                                       child: Text(
-                                        "Could not fetch data from server. This is possibly due to the absence of internet connection",
+                                        "Attempting data search.",
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -637,25 +653,28 @@ class _DashboardTabState extends State<DashboardTab> {
                                 ],
                               ),
                             )
-                          : ListView.builder(
+                          : new ListView.builder(
                               shrinkWrap: true,
                               physics: ClampingScrollPhysics(),
                               itemCount: filteredProperties.length,
+                              cacheExtent: 0.0,
                               itemBuilder: (BuildContext context, int index) {
+                                // filteredProperties = [];
+                                print(filteredProperties);
                                 final item = filteredProperties[index];
-                                return PropertyList(
-                                  amount: filteredProperties[index].amount,
-                                  imagePath: filteredProperties[index].img1,
-                                  location: filteredProperties[index].address,
-                                  propId: filteredProperties[index].prop_id,
-                                  region: filteredProperties[index].region,
-                                  saleOrRent: filteredProperties[index].status,
-                                  title: filteredProperties[index].title,
-                                  phone: filteredProperties[index].phone,
-                                  state: filteredProperties[index].state,
-                                  name: filteredProperties[index].name,
-                                  email: filteredProperties[index].user_email,
-                                  isFav: filteredProperties[index].isFav,
+                                return new PropertyList(
+                                  amount: item.amount,
+                                  imagePath: item.img1,
+                                  location: item.address,
+                                  propId: item.prop_id,
+                                  region: item.region,
+                                  saleOrRent: item.status,
+                                  title: item.title,
+                                  phone: item.phone,
+                                  state: item.state,
+                                  name: item.name,
+                                  email: item.user_email,
+                                  isFav: item.isFav,
                                   goto: EachProperty(
                                     item: item,
                                   ),
@@ -914,15 +933,6 @@ class _DashboardTabState extends State<DashboardTab> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10))),
                           onPressed: () {
-                            // setState(() {
-                            //   filteredProperties = properties
-                            //       .where((p) => p.amount.contains("5"))
-                            //       .toList();
-                            // });
-                            setState(() {
-                              isButtonDisabled = false;
-                              number = "3";
-                            });
                             Navigator.pop(context);
                             filter();
                           },
