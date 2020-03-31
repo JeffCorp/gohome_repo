@@ -157,6 +157,9 @@ class _AllPropertiesState extends State<AllProperties> {
                     width: double.infinity,
                     child: Column(
                       children: <Widget>[
+                        SizedBox(
+                          height: 100,
+                        ),
                         CircularProgressIndicator(backgroundColor: Color(0xFF79c942),),
                                   // Icon(Icons.error,
                                   //     size: 70, color: Colors.red),

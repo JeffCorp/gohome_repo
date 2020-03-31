@@ -453,240 +453,258 @@ class _DashboardTabState extends State<DashboardTab> {
         context: context, builder: (BuildContext context) => simpleDialog);
   }
 
+  Future refresh() async{
+    filteredProperties = [];
+     
+    
+    setState(() {
+      
+      FeaturedServices.getProperties().then((propertiesFromServer) {
+        setState(() {
+          filteredProperties = propertiesFromServer;
+        });
+    });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Stack(
-        children: <Widget>[
-          SafeArea(
-            child: Container(
-              margin: EdgeInsets.only(top: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  // CustomAppBar(),
-                  GestureDetector(
-                    onTap: showNotification,
-                    child: Text("Find Properties around you"),
-                  ),
-                  SearchBox(),
-                  // Text(User.fromJson(user["name"])),
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    margin: EdgeInsets.only(right: 10),
-                    height: MediaQuery.of(context).size.height * 0.5,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Flexible(
-                              flex: 5,
-                              child: ImageButton(
-                                label: "Property for \n       rent",
-                                imageLink: "assets/rent.png",
-                                widget: RentHouses(),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 1,
-                              child: SizedBox(),
-                            ),
-                            Flexible(
-                              flex: 5,
-                              child: ImageButton(
-                                label: "   View all \n Properties",
-                                imageLink: "assets/properties.png",
-                                widget: AllProperties(),
-                              ),
-                            )
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Flexible(
-                              flex: 5,
-                              child: ImageButton(
-                                label: "Property for \n        sale",
-                                imageLink: "assets/sale.png",
-                                widget: SaleHouses(),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 1,
-                              child: SizedBox(),
-                            ),
-                            !isAuth
-                                ? Flexible(
-                                    flex: 5,
-                                    child: ImageButton(
-                                        label: "Become an \n    agent",
-                                        imageLink: "assets/cus_sup.png",
-                                        widget: SignUp()),
-                                  )
-                                : Flexible(
-                                    flex: 5,
-                                    child: ImageButton(
-                                        label: "Go to \n profile",
-                                        imageLink: "assets/person.png",
-                                        widget: Profile()),
-                                  )
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Flexible(
-                              flex: 5,
-                              child: ImageButton(
-                                  label: "Top cities \n   ",
-                                  imageLink: "assets/building.png",
-                                  widget: TopCities()),
-                            ),
-                            Flexible(
-                              flex: 1,
-                              child: SizedBox(),
-                            ),
-                            Flexible(
-                              flex: 5,
-                              child: ImageButton(
-                                label: "Blog Posts \n    ",
-                                imageLink: "assets/blog.png",
-                                widget: BlogDisplay(),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children: <Widget>[],
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 30),
-                    child: NewsLetter(),
-                  ),
-                  Row(
+    return RefreshIndicator(
+      onRefresh: refresh,
+      child: SingleChildScrollView(
+        
+        child: Stack(
+            children: <Widget>[
+              SafeArea(
+                child: Container(
+                  margin: EdgeInsets.only(top: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Flexible(
-                        flex: 2,
+                      // CustomAppBar(),
+                      GestureDetector(
+                        onTap: showNotification,
+                        child: Text("Find Properties around you"),
+                      ),
+                      SearchBox(),
+                      // Text(User.fromJson(user["name"])),
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.only(right: 10),
+                        height: MediaQuery.of(context).size.height * 0.5,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Icon(
-                              Icons.star,
-                              color: Colors.red,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Flexible(
+                                  flex: 5,
+                                  child: ImageButton(
+                                    label: "Property for \n       rent",
+                                    imageLink: "assets/rent.png",
+                                    widget: RentHouses(),
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 1,
+                                  child: SizedBox(),
+                                ),
+                                Flexible(
+                                  flex: 5,
+                                  child: ImageButton(
+                                    label: "   View all \n Properties",
+                                    imageLink: "assets/properties.png",
+                                    widget: AllProperties(),
+                                  ),
+                                )
+                              ],
                             ),
-                            Text("Top featured properties"),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Flexible(
+                                  flex: 5,
+                                  child: ImageButton(
+                                    label: "Property for \n        sale",
+                                    imageLink: "assets/sale.png",
+                                    widget: SaleHouses(),
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 1,
+                                  child: SizedBox(),
+                                ),
+                                !isAuth
+                                    ? Flexible(
+                                        flex: 5,
+                                        child: ImageButton(
+                                            label: "Become an \n    agent",
+                                            imageLink: "assets/cus_sup.png",
+                                            widget: SignUp()),
+                                      )
+                                    : Flexible(
+                                        flex: 5,
+                                        child: ImageButton(
+                                            label: "Go to \n profile",
+                                            imageLink: "assets/person.png",
+                                            widget: Profile()),
+                                      )
+                              ],
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Flexible(
+                                  flex: 5,
+                                  child: ImageButton(
+                                      label: "Top cities \n   ",
+                                      imageLink: "assets/building.png",
+                                      widget: TopCities()),
+                                ),
+                                Flexible(
+                                  flex: 1,
+                                  child: SizedBox(),
+                                ),
+                                Flexible(
+                                  flex: 5,
+                                  child: ImageButton(
+                                    label: "Blog Posts \n    ",
+                                    imageLink: "assets/blog.png",
+                                    widget: BlogDisplay(),
+                                  ),
+                                )
+                              ],
+                            )
                           ],
                         ),
                       ),
-                      Flexible(
-                        flex: 1,
-                        child: Container(
-                          width: double.infinity,
-                          alignment: Alignment.topRight,
-                          child: MaterialButton(
-                              disabledColor: Colors.grey,
-                              color: Colors.white,
-                              elevation: 0,
-                              key: GlobalKey(debugLabel: "sca"),
-                              onPressed: () {
-                                setState(() {
-                                  _settingModalBottomSheet(context);
-                                });
-                                print(filteredProperties);
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Icon(Icons.filter_list),
-                                  Text(
-                                    "Filter",
-                                    style: TextStyle(
-                                      color: Color(0xFF79c942),
-                                    ),
-                                  ),
-                                ],
-                              )),
-                        ),
-                      )
-                    ],
-                  ),
-
-                  filteredProperties.length < 1 && _current > 0
-                      ? Container(
-                          height: 100,
-                          width: double.infinity,
-                          child: Shimmer.fromColors(
-                            baseColor: Colors.grey,
-                            highlightColor: Colors.white,
-                            child: Container(
-                              width: double.infinity,
-                              child: Row(
-                                children: <Widget>[Card()],
-                              ),
+                      Column(
+                        children: <Widget>[],
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 30),
+                        child: NewsLetter(),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Flexible(
+                            flex: 2,
+                            child: Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.red,
+                                ),
+                                Text("Top featured properties"),
+                              ],
                             ),
                           ),
-                        )
-                      : filteredProperties.length < 1 && _current == 0
-                          ? Container(
-                              child: Column(
-                                children: <Widget>[
-                                  SizedBox(
-                                    height: 30,
-                                  ),
-                                  CircularProgressIndicator(),
-                                  // Icon(Icons.error,
-                                  //     size: 70, color: Colors.red),
-                                  Container(
-                                    padding: EdgeInsets.all(30),
-                                    child: Center(
-                                      child: Text(
-                                        "Attempting data search.",
-                                        textAlign: TextAlign.center,
+                          Flexible(
+                            flex: 1,
+                            child: Container(
+                              width: double.infinity,
+                              alignment: Alignment.topRight,
+                              child: MaterialButton(
+                                  disabledColor: Colors.grey,
+                                  color: Colors.white,
+                                  elevation: 0,
+                                  key: GlobalKey(debugLabel: "sca"),
+                                  onPressed: () {
+                                    setState(() {
+                                      _settingModalBottomSheet(context);
+                                    });
+                                    print(filteredProperties);
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: <Widget>[
+                                      Icon(Icons.filter_list),
+                                      Text(
+                                        "Filter",
+                                        style: TextStyle(
+                                          color: Color(0xFF79c942),
+                                        ),
                                       ),
-                                    ),
+                                    ],
+                                  )),
+                            ),
+                          )
+                        ],
+                      ),
+
+                      filteredProperties.length < 1 && _current > 0
+                          ? Container(
+                              height: 100,
+                              width: double.infinity,
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.grey,
+                                highlightColor: Colors.white,
+                                child: Container(
+                                  width: double.infinity,
+                                  child: Row(
+                                    children: <Widget>[Card()],
                                   ),
-                                ],
+                                ),
                               ),
                             )
-                          : new ListView.builder(
-                              shrinkWrap: true,
-                              physics: ClampingScrollPhysics(),
-                              itemCount: filteredProperties.length,
-                              cacheExtent: 0.0,
-                              itemBuilder: (BuildContext context, int index) {
-                                // filteredProperties = [];
-                                print(filteredProperties);
-                                final item = filteredProperties[index];
-                                return new PropertyList(
-                                  amount: item.amount,
-                                  imagePath: item.img1,
-                                  location: item.address,
-                                  propId: item.prop_id,
-                                  region: item.region,
-                                  saleOrRent: item.status,
-                                  title: item.title,
-                                  phone: item.phone,
-                                  state: item.state,
-                                  name: item.name,
-                                  email: item.user_email,
-                                  isFav: item.isFav,
-                                  goto: EachProperty(
-                                    item: item,
+                          : filteredProperties.length < 1 && _current == 0
+                              ? Container(
+                                  child: Column(
+                                    children: <Widget>[
+                                      SizedBox(
+                                        height: 30,
+                                      ),
+                                      CircularProgressIndicator(),
+                                      // Icon(Icons.error,
+                                      //     size: 70, color: Colors.red),
+                                      Container(
+                                        padding: EdgeInsets.all(30),
+                                        child: Center(
+                                          child: Text(
+                                            "Attempting data search.",
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
-                            )
-                ],
+                                )
+                              : new ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: ClampingScrollPhysics(),
+                                  itemCount: filteredProperties.length,
+                                  cacheExtent: 0.0,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    // filteredProperties = [];
+                                    print(filteredProperties);
+                                    final item = filteredProperties[index];
+                                    return new PropertyList(
+                                      amount: item.amount,
+                                      imagePath: item.img1,
+                                      location: item.address,
+                                      propId: item.prop_id,
+                                      region: item.region,
+                                      saleOrRent: item.status,
+                                      title: item.title,
+                                      phone: item.phone,
+                                      state: item.state,
+                                      name: item.name,
+                                      email: item.user_email,
+                                      isFav: item.isFav,
+                                      goto: EachProperty(
+                                        item: item,
+                                      ),
+                                    );
+                                  },
+                                )
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        )
     );
   }
 
